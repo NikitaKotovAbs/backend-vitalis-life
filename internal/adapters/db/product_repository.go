@@ -26,7 +26,7 @@ func (r *ProductRepository) GetAll() ([]*product.Product, error) {
     var products []*product.Product
     for rows.Next() {
         var p product.Product
-        var img sql.Null[[]byte] // Для обработки NULL в img
+        var img sql.NullString // Для обработки NULL в img
         
         err := rows.Scan(
             &p.ID,
@@ -42,7 +42,7 @@ func (r *ProductRepository) GetAll() ([]*product.Product, error) {
         }
         
         if img.Valid {
-            p.Image = img.V
+            p.Image = img.String
         }
         
         products = append(products, &p)

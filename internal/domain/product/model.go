@@ -8,6 +8,6 @@ type Product struct {
     Price       float64   `json:"price"`
     Description string    `json:"description"`
     Discount    float64   `json:"discount"`
-    Image       []byte    `json:"image,omitempty"` // omitempty - не показывать если nil
+    Image       string    `json:"image,omitempty"` // omitempty - не показывать если nil
     CreatedAt   time.Time `json:"created_at"`
 }
