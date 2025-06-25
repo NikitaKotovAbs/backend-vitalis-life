@@ -2,7 +2,7 @@ package http
 
 import (
 	appProduct "backend/internal/app/product"
-    httpProduct "backend/internal/adapters/http/product"
+    "backend/internal/adapters/http/handlers"
 	"backend/pkg/logger"
 	"backend/config"
 	"go.uber.org/zap"
@@ -24,7 +24,7 @@ func Router(productService *appProduct.Service, cfg *config.Config) *gin.Engine 
         c.Next()
     })
     
-    productHandler := httpProduct.NewProductHandler(productService)
+    productHandler := handlers.NewProductHandler(productService)
 
     public := router.Group("/api/v1/public")
     {
