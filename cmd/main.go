@@ -35,13 +35,13 @@ func main() {
 	defer cancel()
 
 	// Загрузка переменных окружения
-	err := godotenv.Load(".env")
-	if err != nil {
-        logger.Error("Ошибка загрузки переменных окружения",
-		zap.Error(err),
-		zap.String("source", "main"))
-		os.Exit(1)
-	}
+	// err := godotenv.Load(".env")
+	// if err != nil {
+    //     logger.Error("Ошибка загрузки переменных окружения",
+	// 	zap.Error(err),
+	// 	zap.String("source", "main"))
+	// 	os.Exit(1)
+	// }
 
 	// Загрузка конфигурации
 	cfg, err := config.Load()
