@@ -31,6 +31,7 @@ func Router(productService *appProduct.Service, cfg *config.Config) *gin.Engine 
         product := public.Group("/product")  
         {
             product.GET("/", productHandler.GetAllProducts)
+            product.GET("/:id", productHandler.GetByIdProducts)
         }
     }
     

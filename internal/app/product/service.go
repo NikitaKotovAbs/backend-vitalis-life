@@ -18,3 +18,7 @@ func NewService(repo product.ProductRepository) *Service {
 func (s *Service) GetAllProducts() ([]*product.Product, error) {
     return s.repo.GetAll()
 }
+
+func (s *Service) GetByIdProducts(id int) (*product.Product, error) {
+    return s.repo.GetByID(id)
+}
