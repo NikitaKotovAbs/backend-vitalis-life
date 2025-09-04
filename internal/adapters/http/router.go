@@ -1,22 +1,24 @@
 package http
 
 import (
-	appProduct "backend/internal/app/product"
+    appPayment "backend/internal/app/payment"
+    appProduct "backend/internal/app/product"
     "backend/internal/adapters/http/handlers"
-	"backend/pkg/logger"
-	"backend/config"
-	"go.uber.org/zap"
-	"github.com/gin-gonic/gin"
+    "backend/pkg/logger"
+    "backend/config"
+    "go.uber.org/zap"
+    "github.com/gin-gonic/gin"
 )
 
-
-func Router(productService *appProduct.Service, cfg *config.Config) *gin.Engine {
+func Router(
+    productService *appProduct.Service, 
+    paymentService *appPayment.Service, 
+    cfg *config.Config,
+) *gin.Engine {
     router := gin.Default()
     
-    // Добавляем CORS middleware из конфига
     router.Use(CORSNew(cfg.CORS))
     
-    // Добавляем middleware для логирования запросов
     router.Use(func(c *gin.Context) {
         logger.Debug("HTTP запрос",
             zap.String("method", c.Request.Method),
@@ -25,6 +27,8 @@ func Router(productService *appProduct.Service, cfg *config.Config) *gin.Engine 
     })
     
     productHandler := handlers.NewProductHandler(productService)
+    paymentHandler := handlers.NewPaymentHandler(paymentService)
+    webhookHandler := handlers.NewWebhookHandler()
 
     public := router.Group("/api/v1/public")
     {
@@ -33,7 +37,14 @@ func Router(productService *appProduct.Service, cfg *config.Config) *gin.Engine 
             product.GET("/", productHandler.GetAllProducts)
             product.GET("/:id", productHandler.GetByIdProducts)
         }
+
+        payment := public.Group("/payment")
+        {
+            payment.POST("/create", paymentHandler.CreatePayment)
+            payment.GET("/:id/status", paymentHandler.GetStatus)      // Исправлено на GetStatus
+            payment.POST("/:id/cancel", paymentHandler.Cancel)        // Исправлено на Cancel
+        }
     }
-    
+    router.POST("/webhook/payment", webhookHandler.HandlePaymentWebhook)
     return router
 }
