@@ -4,6 +4,7 @@ import (
     "net"
     "net/http"
     "os"
+	"encoding/json"
     "strings"
     "backend/pkg/logger"
     "backend/pkg/smtp_sender"
@@ -81,7 +82,7 @@ func (h *WebhookHandler) handleSuccessfulPayment(paymentData map[string]interfac
     deliveryType, _ := metadata["deliveryType"].(string)
     deliveryAddress, _ := metadata["deliveryAddress"].(string)
     comment, _ := metadata["comment"].(string)
-    cartItems, _ := metadata["cartItems"].(string)
+    cartItemsJSON, _ := metadata["cartItems"].(string)
 
     // Извлекаем данные о платеже
     amountData, _ := paymentData["amount"].(map[string]interface{})
@@ -89,6 +90,16 @@ func (h *WebhookHandler) handleSuccessfulPayment(paymentData map[string]interfac
     currency, _ := amountData["currency"].(string)
     description, _ := paymentData["description"].(string)
     paymentID, _ := paymentData["id"].(string)
+
+    // Парсим JSON с товарами
+    var cartItems []smtp_sender.CartItem
+    if cartItemsJSON != "" {
+        if err := json.Unmarshal([]byte(cartItemsJSON), &cartItems); err != nil {
+            logger.Error("Failed to parse cart items", zap.Error(err))
+            // Продолжаем обработку даже если не удалось распарсить товары
+            cartItems = []smtp_sender.CartItem{}
+        }
+    }
 
     // Формируем данные заказа
     order := smtp_sender.OrderData{
@@ -102,7 +113,7 @@ func (h *WebhookHandler) handleSuccessfulPayment(paymentData map[string]interfac
         Amount:          amount,
         Currency:        currency,
         Description:     description,
-        CartItems:       cartItems,
+        CartItems:       cartItems, // Теперь это массив товаров, а не строка
     }
 
     // Получаем email менеджера из переменных окружения
