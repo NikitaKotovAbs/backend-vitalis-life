@@ -5,6 +5,7 @@ import "time"
 type Product struct {
     ID          int       `json:"id"`
     Title       string    `json:"title"`
+    Name string `json:"name"`
     Price       float64   `json:"price"`
     Description string    `json:"description"`
     Discount    float64   `json:"discount"`

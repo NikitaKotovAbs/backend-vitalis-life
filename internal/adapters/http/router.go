@@ -27,7 +27,7 @@ func Router(
     })
     
     productHandler := handlers.NewProductHandler(productService)
-    paymentHandler := handlers.NewPaymentHandler(paymentService)
+    paymentHandler := handlers.NewPaymentHandler(paymentService, productService)
     webhookHandler := handlers.NewWebhookHandler()
 
     public := router.Group("/api/v1/public")

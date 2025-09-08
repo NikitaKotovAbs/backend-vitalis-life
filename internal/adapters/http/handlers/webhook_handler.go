@@ -75,6 +75,8 @@ func (h *WebhookHandler) handleSuccessfulPayment(paymentData map[string]interfac
         return
     }
 
+    
+
     // Извлекаем данные
     email, _ := metadata["email"].(string)
     customerName, _ := metadata["customerName"].(string)
@@ -84,22 +86,29 @@ func (h *WebhookHandler) handleSuccessfulPayment(paymentData map[string]interfac
     comment, _ := metadata["comment"].(string)
     cartItemsJSON, _ := metadata["cartItems"].(string)
 
-    // Извлекаем данные о платеже
     amountData, _ := paymentData["amount"].(map[string]interface{})
     amount, _ := amountData["value"].(string)
     currency, _ := amountData["currency"].(string)
     description, _ := paymentData["description"].(string)
     paymentID, _ := paymentData["id"].(string)
 
-    // Парсим JSON с товарами
     var cartItems []smtp_sender.CartItem
     if cartItemsJSON != "" {
         if err := json.Unmarshal([]byte(cartItemsJSON), &cartItems); err != nil {
-            logger.Error("Failed to parse cart items", zap.Error(err))
-            // Продолжаем обработку даже если не удалось распарсить товары
+            logger.Error("Failed to parse cart items", 
+                zap.Error(err),
+                zap.String("cart_items_json", cartItemsJSON))
             cartItems = []smtp_sender.CartItem{}
+        } else {
+            logger.Info("Cart items parsed successfully",
+                zap.Int("items_count", len(cartItems)),
+                zap.Any("items", cartItems))
         }
+    } else {
+        logger.Warn("Empty cart items JSON in webhook")
     }
+
+    
 
     // Формируем данные заказа
     order := smtp_sender.OrderData{

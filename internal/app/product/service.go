@@ -22,3 +22,7 @@ func (s *Service) GetAllProducts() ([]*product.Product, error) {
 func (s *Service) GetByIdProducts(id int) (*product.Product, error) {
     return s.repo.GetByID(id)
 }
+
+func (s *Service) GetProductByID(id int) (*product.Product, error) {
+    return s.repo.GetByID(id)
+}
