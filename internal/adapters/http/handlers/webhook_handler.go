@@ -1,15 +1,16 @@
 package handlers
 
 import (
-    "net"
-    "net/http"
-    "os"
+	"backend/pkg/logger"
+	"backend/pkg/smtp_sender"
 	"encoding/json"
-    "strings"
-    "backend/pkg/logger"
-    "backend/pkg/smtp_sender"
-    "github.com/gin-gonic/gin"
-    "go.uber.org/zap"
+	"net"
+	"net/http"
+	"os"
+	"strings"
+
+	"github.com/gin-gonic/gin"
+	"go.uber.org/zap"
 )
 
 type WebhookHandler struct {
@@ -53,10 +54,18 @@ func (h *WebhookHandler) HandlePaymentWebhook(c *gin.Context) {
         return
     }
 
-    logger.Info("Webhook received", 
-        zap.String("event", notification.Event),
-        zap.String("payment_id", notification.Object["id"].(string)),
-        zap.String("source_ip", clientIP))
+    // БЕЗОПАСНОЕ ЛОГИРОВАНИЕ - проверяем наличие полей
+    paymentID, hasID := notification.Object["id"].(string)
+    if hasID {
+        logger.Info("Webhook received", 
+            zap.String("event", notification.Event),
+            zap.String("payment_id", paymentID),
+            zap.String("source_ip", clientIP))
+    } else {
+        logger.Info("Webhook received (no payment ID)", 
+            zap.String("event", notification.Event),
+            zap.String("source_ip", clientIP))
+    }
 
     // Обрабатываем только успешные платежи
     if notification.Event == "payment.succeeded" {
@@ -68,16 +77,14 @@ func (h *WebhookHandler) HandlePaymentWebhook(c *gin.Context) {
 }
 
 func (h *WebhookHandler) handleSuccessfulPayment(paymentData map[string]interface{}) {
-    // Извлекаем данные из metadata
+    // Извлекаем данные из metadata с проверками
     metadata, ok := paymentData["metadata"].(map[string]interface{})
     if !ok {
         logger.Error("Invalid metadata format in webhook")
         return
     }
 
-    
-
-    // Извлекаем данные
+    // БЕЗОПАСНОЕ ИЗВЛЕЧЕНИЕ ДАННЫХ
     email, _ := metadata["email"].(string)
     customerName, _ := metadata["customerName"].(string)
     phone, _ := metadata["phone"].(string)
@@ -86,29 +93,26 @@ func (h *WebhookHandler) handleSuccessfulPayment(paymentData map[string]interfac
     comment, _ := metadata["comment"].(string)
     cartItemsJSON, _ := metadata["cartItems"].(string)
 
-    amountData, _ := paymentData["amount"].(map[string]interface{})
-    amount, _ := amountData["value"].(string)
-    currency, _ := amountData["currency"].(string)
-    description, _ := paymentData["description"].(string)
-    paymentID, _ := paymentData["id"].(string)
+    // БЕЗОПАСНОЕ ИЗВЛЕЧЕНИЕ ДАННЫХ О ПЛАТЕЖЕ
+    var amount, currency, description, paymentID string
+    
+    if amountData, ok := paymentData["amount"].(map[string]interface{}); ok {
+        amount, _ = amountData["value"].(string)
+        currency, _ = amountData["currency"].(string)
+    }
+    
+    description, _ = paymentData["description"].(string)
+    paymentID, _ = paymentData["id"].(string)
 
+    // Парсим JSON с товарами
     var cartItems []smtp_sender.CartItem
     if cartItemsJSON != "" {
         if err := json.Unmarshal([]byte(cartItemsJSON), &cartItems); err != nil {
-            logger.Error("Failed to parse cart items", 
-                zap.Error(err),
-                zap.String("cart_items_json", cartItemsJSON))
+            logger.Error("Failed to parse cart items", zap.Error(err))
+            // Продолжаем обработку даже если не удалось распарсить товары
             cartItems = []smtp_sender.CartItem{}
-        } else {
-            logger.Info("Cart items parsed successfully",
-                zap.Int("items_count", len(cartItems)),
-                zap.Any("items", cartItems))
         }
-    } else {
-        logger.Warn("Empty cart items JSON in webhook")
     }
-
-    
 
     // Формируем данные заказа
     order := smtp_sender.OrderData{
@@ -122,7 +126,7 @@ func (h *WebhookHandler) handleSuccessfulPayment(paymentData map[string]interfac
         Amount:          amount,
         Currency:        currency,
         Description:     description,
-        CartItems:       cartItems, // Теперь это массив товаров, а не строка
+        CartItems:       cartItems,
     }
 
     // Получаем email менеджера из переменных окружения

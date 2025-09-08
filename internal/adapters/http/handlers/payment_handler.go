@@ -166,7 +166,7 @@ func (h *PaymentHandler) enrichCartItems(cartItems []CartItemRequest) ([]CartIte
 			ProductID: item.ProductID,
 			Quantity:  item.Quantity,
 			Price:     price,
-			Name:      product.Name, // ТЕПЕРЬ ЗДЕСЬ БУДЕТ НАЗВАНИЕ
+			Name:      product.Title, // ТЕПЕРЬ ЗДЕСЬ БУДЕТ НАЗВАНИЕ
 		}
 	}
 
