@@ -126,22 +126,49 @@ func (h *PaymentHandler) CreatePayment(c *gin.Context) {
     	// УБИРАЕМ receipt_items из metadata
 	}
 
+	
+
 	// ФОРМИРУЕМ ДАННЫЕ ДЛЯ ЧЕКА 54-ФЗ
+	// 7. ФОРМИРУЕМ ЧЕК ОТДЕЛЬНО ДЛЯ ПЕРЕДАЧИ В СЕРВИС
 	receiptItems := make([]map[string]interface{}, len(enrichedItems))
 	for i, item := range enrichedItems {
+    	// Правильный формат: цена за единицу товара
+    	pricePerItem := fmt.Sprintf("%.2f", item.Price)
+    	quantity := fmt.Sprintf("%d", item.Quantity)
+    
     	receiptItems[i] = map[string]interface{}{
-        "description":     item.Name,
-        "quantity":        fmt.Sprintf("%d", item.Quantity),
+        	"description":     item.Name,
+        	"quantity":        quantity,
+        	"amount": map[string]interface{}{
+            	"value":    pricePerItem, // Цена за 1 штуку
+            	"currency": "RUB",
+        	},
+        	"vat_code":        "1",
+        	"payment_mode":    "full_payment",
+        	"payment_subject": "commodity",
+    	}
+    
+    	// Для отладки - логируем каждый товар
+ 		logger.Debug("Receipt item",
+        	zap.String("name", item.Name),
+        	zap.String("price", pricePerItem),
+        	zap.String("quantity", quantity))
+	}
+
+	if deliveryCost > 0 {
+    deliveryItem := map[string]interface{}{
+        "description":     "Доставка",
+        "quantity":        "1",
         "amount": map[string]interface{}{
-            "value":    fmt.Sprintf("%.2f", item.Price * float64(item.Quantity)),
+            "value":    fmt.Sprintf("%.2f", deliveryCost),
             "currency": "RUB",
         },
         "vat_code":        "1",
         "payment_mode":    "full_payment",
-        "payment_subject": "commodity",
-    	}
-	}
-
+        "payment_subject": "service", // Услуга, а не товар
+    }
+    receiptItems = append(receiptItems, deliveryItem)
+}
 	
 
 	

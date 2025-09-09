@@ -1,6 +1,6 @@
 server:
   version: "Vitalis-api-v1.0.0"
-  port: ":8000"
+  port: ":8080"
 
 logger:
   level: "debug" # debug, info
