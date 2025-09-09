@@ -52,7 +52,7 @@ func (h *PaymentHandler) CreatePayment(c *gin.Context) {
 		DeliveryType    string            `json:"deliveryType" binding:"required,oneof=delivery pickup"`
 		DeliveryAddress string            `json:"deliveryAddress"`
 		Comment         string            `json:"comment"`
-		CartItems       []CartItemRequest `json:"cartItems" binding:"required,min=1"` // ИСПОЛЬЗУЕМ НОВУЮ СТРУКТУРУ
+		CartItems       []CartItemRequest `json:"cartItems" binding:"required,min=1"`
 	}
 
 	if err := c.ShouldBindJSON(&paymentRequest); err != nil {
@@ -105,35 +105,58 @@ func (h *PaymentHandler) CreatePayment(c *gin.Context) {
 	}
 	description = description[:len(description)-2] // Убираем последнюю запятую
 
-	// 5. ПОДГОТАВЛИВАЕМ МЕТАДАННЫЕ С ПОЛНЫМИ ДАННЫМИ
+	//  ПОДГОТАВЛИВАЕМ МЕТАДАННЫЕ С ПОЛНЫМИ ДАННЫМИ И ЧЕКОМ
 	cartItemsJSON, err := json.Marshal(enrichedItems)
 	if err != nil {
-		logger.Error("Failed to marshal cart items", zap.Error(err))
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Ошибка обработки корзины"})
-		return
+    	logger.Error("Failed to marshal cart items", zap.Error(err))
+    	c.JSON(http.StatusInternalServerError, gin.H{"error": "Ошибка обработки корзины"})
+    	return
 	}
 
 	metadata := map[string]interface{}{
-		"email":           paymentRequest.Email,
-		"phone":           paymentRequest.Phone,
-		"customerName":    paymentRequest.CustomerName,
-		"deliveryType":    paymentRequest.DeliveryType,
-		"deliveryAddress": paymentRequest.DeliveryAddress,
-		"comment":         paymentRequest.Comment,
-		"cartItems":       string(cartItemsJSON), // ТЕПЕРЬ С НАЗВАНИЯМИ И ЦЕНАМИ
-		"itemsTotal":      itemsTotal,
-		"deliveryCost":    deliveryCost,
+    	"email":           paymentRequest.Email,
+    	"phone":           paymentRequest.Phone,
+    	"customerName":    paymentRequest.CustomerName,
+    	"deliveryType":    paymentRequest.DeliveryType,
+    	"deliveryAddress": paymentRequest.DeliveryAddress,
+    	"comment":         paymentRequest.Comment,
+    	"cartItems":       string(cartItemsJSON),
+    	"itemsTotal":      itemsTotal,
+    	"deliveryCost":    deliveryCost,
+    	// УБИРАЕМ receipt_items из metadata
 	}
 
-	// 6. СОЗДАЕМ ПЛАТЕЖ С ПРАВИЛЬНОЙ СУММОЙ
-	domainPaymentReq := &domainPayment.PaymentRequest{
-		Amount:      totalAmount, // ПЕРЕСЧИТАННАЯ СУММА
-		Description: description,
-		Currency:    paymentRequest.Currency,
-		ReturnURL:   paymentRequest.ReturnURL,
-		Email:       paymentRequest.Email,
-		Metadata:    metadata,
+	// ФОРМИРУЕМ ДАННЫЕ ДЛЯ ЧЕКА 54-ФЗ
+	receiptItems := make([]map[string]interface{}, len(enrichedItems))
+	for i, item := range enrichedItems {
+    	receiptItems[i] = map[string]interface{}{
+        "description":     item.Name,
+        "quantity":        fmt.Sprintf("%d", item.Quantity),
+        "amount": map[string]interface{}{
+            "value":    fmt.Sprintf("%.2f", item.Price * float64(item.Quantity)),
+            "currency": "RUB",
+        },
+        "vat_code":        "1",
+        "payment_mode":    "full_payment",
+        "payment_subject": "commodity",
+    	}
 	}
+
+	
+
+	
+
+	//  СОЗДАЕМ ПЛАТЕЖ С ПРАВИЛЬНОЙ СУММОЙ
+	domainPaymentReq := &domainPayment.PaymentRequest{
+    Amount:      totalAmount,
+    Description: description,
+    Currency:    paymentRequest.Currency,
+    ReturnURL:   paymentRequest.ReturnURL,
+    Email:       paymentRequest.Email,
+    Phone:       paymentRequest.Phone,
+    Metadata:    metadata,
+    ReceiptItems: receiptItems, // Передаем чек отдельным полем
+}
 
 	paymentResp, err := h.service.CreatePayment(domainPaymentReq)
 	if err != nil {

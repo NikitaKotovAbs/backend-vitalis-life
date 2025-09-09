@@ -40,3 +40,6 @@
 {"level":"info","ts":"2025-09-09T00:27:40.974+0300","caller":"cmd/main.go:46","msg":"Конфигурация успешно загружена","config_level":"debug","version":"Vitalis-api-v1.0.0"}
 {"level":"info","ts":"2025-09-09T00:29:13.078+0300","caller":"cmd/main.go:46","msg":"Конфигурация успешно загружена","config_level":"debug","version":"Vitalis-api-v1.0.0"}
 {"level":"info","ts":"2025-09-09T00:46:26.329+0300","caller":"cmd/main.go:46","msg":"Конфигурация успешно загружена","config_level":"debug","version":"Vitalis-api-v1.0.0"}
+{"level":"info","ts":"2025-09-09T02:02:50.523+0300","caller":"cmd/main.go:46","msg":"Конфигурация успешно загружена","config_level":"debug","version":"Vitalis-api-v1.0.0"}
+{"level":"info","ts":"2025-09-09T04:32:31.835+0300","caller":"cmd/main.go:46","msg":"Конфигурация успешно загружена","config_level":"debug","version":"Vitalis-api-v1.0.0"}
+{"level":"info","ts":"2025-09-09T04:45:21.872+0300","caller":"cmd/main.go:46","msg":"Конфигурация успешно загружена","config_level":"debug","version":"Vitalis-api-v1.0.0"}

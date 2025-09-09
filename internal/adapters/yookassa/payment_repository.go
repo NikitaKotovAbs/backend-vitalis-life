@@ -29,14 +29,7 @@ func NewPaymentRepository(shopID, secretKey string) *PaymentRepository {
 }
 
 func (r *PaymentRepository) CreatePayment(request *domainPayment.PaymentRequest) (*domainPayment.PaymentResponse, error) {
-    // Генерируем OrderID
-    orderID := generateOrderID()
     amountValue := fmt.Sprintf("%.2f", request.Amount)
-
-    // Просто используем metadata как есть - без обработки customerData
-    metadata := request.Metadata
-    metadata["orderId"] = orderID
-    metadata["email"] = request.Email
 
     paymentData := map[string]interface{}{
         "amount": map[string]string{
@@ -49,14 +42,27 @@ func (r *PaymentRepository) CreatePayment(request *domainPayment.PaymentRequest)
             "return_url": request.ReturnURL,
         },
         "description": request.Description,
-        "metadata":    metadata,
+        "metadata":    request.Metadata,
     }
 
-    // Остальной код без изменений...
+    // ДОБАВЛЯЕМ ЧЕК 54-ФЗ ИЗ ОТДЕЛЬНОГО ПОЛЯ
+    if len(request.ReceiptItems) > 0 {
+        paymentData["receipt"] = map[string]interface{}{
+            "customer": map[string]string{
+                "email": request.Email,
+            },
+            "items": request.ReceiptItems,
+        }
+    }
+
     jsonData, err := json.Marshal(paymentData)
     if err != nil {
         return nil, fmt.Errorf("failed to marshal payment data: %w", err)
     }
+
+    // Логируем запрос для отладки
+    logger.Debug("Sending request to YooKassa", 
+        zap.String("request", string(jsonData)))
 
     httpReq, err := http.NewRequest(
         "POST", 
