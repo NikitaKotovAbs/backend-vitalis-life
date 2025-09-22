@@ -1,7 +1,5 @@
-🌿 Vitalis Life - Серверная часть
-https://img.shields.io/badge/Go-1.19%252B-blue
-https://img.shields.io/badge/API-REST-brightgreen
-https://img.shields.io/badge/DB-PostgreSQL-informational
+# 🌿 Vitalis Life - Серверная часть
+
 
 Серверное приложение для интернет-магазина здорового питания и экопродуктов Vitalis Life.
 
