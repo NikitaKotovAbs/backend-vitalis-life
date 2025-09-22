@@ -146,8 +146,11 @@ MANAGER_EMAIL=manager@vitalis-life.ru
 # Структура проекта
 
 vitalis-server/
+
 ├── 📂 cmd/ # Точка входа приложения
+
 ├── 📂 config/ # Конфигурационные файлы
+
 ├── 📂 internal/ # Внутренние пакеты приложения
 │ ├── 📂 adapter/ # HTTP контроллеры и адаптеры
 │ ├── 📂 app/ # Бизнес-логика и use cases
