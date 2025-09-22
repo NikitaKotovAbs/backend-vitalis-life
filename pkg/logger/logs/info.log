@@ -55,3 +55,5 @@
 {"level":"info","ts":"2025-09-22T11:31:18.607+0300","caller":"cmd/main.go:111","msg":"Получен сигнал завершения, остановка сервера..."}
 {"level":"info","ts":"2025-09-22T11:31:18.607+0300","caller":"cmd/main.go:118","msg":"Сервер корректно остановлен"}
 {"level":"info","ts":"2025-09-22T11:31:18.607+0300","caller":"cmd/main.go:121","msg":"Приложение завершает работу","version":"Vitalis-api-v1.0.0"}
+{"level":"info","ts":"2025-09-22T11:39:23.155+0300","caller":"cmd/main.go:46","msg":"Конфигурация успешно загружена","config_level":"debug","version":"Vitalis-api-v1.0.0"}
+{"level":"info","ts":"2025-09-22T12:40:42.622+0300","caller":"cmd/main.go:46","msg":"Конфигурация успешно загружена","config_level":"debug","version":"Vitalis-api-v1.0.0"}
