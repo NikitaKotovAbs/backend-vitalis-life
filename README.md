@@ -129,8 +129,8 @@ MANAGER_EMAIL=manager@vitalis-life.ru
 
 ## Запускаем приложение
 ### 1. Клонируем приложение с репозитория^
-`git clone <repository-url>`
-`cd backend-vitalis-life`
+`git clone <repository-url>
+    cd backend-vitalis-life`
 
 ### 2. Установите зависимости:
 `go mod download`
