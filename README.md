@@ -75,6 +75,7 @@ cors:
 ### 2. Настройка переменных окружения
 Создайте файл `.env` в папке `cmd/` или экспортируйте переменные в среде выполнения:
 
+```env
 # Настройки базы данных PostgreSQL
 DB_USER=your_database_user
 DB_PASSWORD=your_secure_password
@@ -97,6 +98,7 @@ FRONTEND_URL=https://vitalis-life.ru
 
 # Email менеджера для уведомлений о заказах
 MANAGER_EMAIL=manager@vitalis-life.ru
+```
 
 # Настройки базы данных
 | № | Функциональность | Описание |
