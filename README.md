@@ -123,3 +123,12 @@ MANAGER_EMAIL=manager@vitalis-life.ru
 ### 4. Запустите приложение:
 `go run cmd/main.go`
 Если запускаете на сервере необходимо предвадительно собрать проект
+
+## Маршруты
+
+`GET    /api/v1/public/product/  - Выгрузка всех карточек товаров
+GET    /api/v1/public/product/:id - Выгрузка карточки по id
+POST   /api/v1/public/payment/create - Создание invoce платежа
+GET    /api/v1/public/payment/:id/status - проверка статуса платежа
+POST   /api/v1/public/payment/:id/cancel - отменить платеж
+POST   /webhook/payment - Получение сигнала об успешном платеже для отправки чеков.`
