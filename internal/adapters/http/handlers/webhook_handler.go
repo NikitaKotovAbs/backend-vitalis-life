@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"backend/pkg/logger"
+	"backend/pkg/templates"
 	"backend/pkg/smtp_sender"
 	"encoding/json"
 	"net"
@@ -105,17 +106,17 @@ func (h *WebhookHandler) handleSuccessfulPayment(paymentData map[string]interfac
     paymentID, _ = paymentData["id"].(string)
 
     // Парсим JSON с товарами
-    var cartItems []smtp_sender.CartItem
+    var cartItems []templates.CartItem
     if cartItemsJSON != "" {
         if err := json.Unmarshal([]byte(cartItemsJSON), &cartItems); err != nil {
             logger.Error("Failed to parse cart items", zap.Error(err))
             // Продолжаем обработку даже если не удалось распарсить товары
-            cartItems = []smtp_sender.CartItem{}
+            cartItems = []templates.CartItem{}
         }
     }
 
     // Формируем данные заказа
-    order := smtp_sender.OrderData{
+    order := templates.OrderData{
         CustomerName:    customerName,
         Email:           email,
         Phone:           phone,

@@ -46,3 +46,12 @@
 {"level":"info","ts":"2025-09-09T04:59:20.865+0300","caller":"cmd/main.go:46","msg":"Конфигурация успешно загружена","config_level":"debug","version":"Vitalis-api-v1.0.0"}
 {"level":"info","ts":"2025-09-09T05:12:39.566+0300","caller":"cmd/main.go:46","msg":"Конфигурация успешно загружена","config_level":"debug","version":"Vitalis-api-v1.0.0"}
 {"level":"info","ts":"2025-09-09T05:12:57.989+0300","caller":"cmd/main.go:46","msg":"Конфигурация успешно загружена","config_level":"debug","version":"Vitalis-api-v1.0.0"}
+{"level":"info","ts":"2025-09-18T22:36:35.169+0300","caller":"cmd/main.go:46","msg":"Конфигурация успешно загружена","config_level":"debug","version":"Vitalis-api-v1.0.0"}
+{"level":"info","ts":"2025-09-19T00:56:10.303+0300","caller":"cmd/main.go:46","msg":"Конфигурация успешно загружена","config_level":"debug","version":"Vitalis-api-v1.0.0"}
+{"level":"info","ts":"2025-09-22T11:10:29.461+0300","caller":"cmd/main.go:46","msg":"Конфигурация успешно загружена","config_level":"debug","version":"Vitalis-api-v1.0.0"}
+{"level":"info","ts":"2025-09-22T11:25:34.039+0300","caller":"cmd/main.go:46","msg":"Конфигурация успешно загружена","config_level":"debug","version":"Vitalis-api-v1.0.0"}
+{"level":"info","ts":"2025-09-22T11:28:05.797+0300","caller":"cmd/main.go:46","msg":"Конфигурация успешно загружена","config_level":"info","version":"Vitalis-api-v1.0.0"}
+{"level":"info","ts":"2025-09-22T11:28:05.820+0300","caller":"cmd/main.go:98","msg":"Запуск сервера","port":":8080","mode":"debug"}
+{"level":"info","ts":"2025-09-22T11:31:18.607+0300","caller":"cmd/main.go:111","msg":"Получен сигнал завершения, остановка сервера..."}
+{"level":"info","ts":"2025-09-22T11:31:18.607+0300","caller":"cmd/main.go:118","msg":"Сервер корректно остановлен"}
+{"level":"info","ts":"2025-09-22T11:31:18.607+0300","caller":"cmd/main.go:121","msg":"Приложение завершает работу","version":"Vitalis-api-v1.0.0"}
